@@ -1,0 +1,17 @@
+Notes:
+
+- Make zoomed out chip size big enough to hold internals
+- Make Nand gates all the same size
+- Display contents of chip on hover
+- Display names of chips only when big enough to read them
+- Clicking on chip selects it, which
+  - zooms in on it,
+  - exposes its internals (without need for hover),
+  - adds it to breadcrumb,
+  - and displays details in panel.
+  - Maybe also elevates it (using drop shadow, Material Design-style)
+- Display of chips is like design of chips
+  - From left to right, display lines of actions
+  - Alternate between wire rearranging and Actions (wires + chips + nands)
+  - Consider adding "Pipeline" action, which allows multiple chips in a row (so that, for example three Nots could run along side one Add)
+  - Or perhaps a "Group" action, which is like a chip for the purposes of layout

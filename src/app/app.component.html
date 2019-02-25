@@ -1,0 +1,84 @@
+<div>
+    Hello, World!
+</div>
+
+<div>
+  <mat-slider [(ngModel)]=shift></mat-slider>{{shift}}
+</div>
+
+<svg width="600" height="400">
+  <rect width="100%" height="100%" style="fill:rgb(211, 211, 211)" />
+  <g *ngFor="let input of chip.input; index as y">
+    <svg x="10" [attr.y]="y*150+10" style="fill:gray; stroke:black">
+      <g>
+          <line x1="0"  y1="70" x2="100" y2="70" style="stroke:black;stroke-width:4"/>
+        <text x="25" y="60" font-family="Verdana" font-size="20" fill="black">{{input}}</text>
+      </g>
+    </svg>
+  </g>
+  <g *ngFor="let line of chip.design; index as x">
+    <g *ngFor="let action of line; index as y">
+      <svg *ngIf="action.kind === 'apply'" [attr.x]="x*150+10+150" [attr.y]="y*150+10" style="fill:gray; stroke:black">
+        <g>
+          <polygon points="0,0 0,100 100,50"  />
+          <circle cx="105" cy="50" r="5" />
+          <text x="25" y="60" font-family="Verdana" font-size="20" fill="black">{{action.chip.name}}</text>
+        </g>
+      </svg>
+      <svg *ngIf="action.kind !== 'apply'" [attr.x]="x*150+10+150" [attr.y]="y*150+10" style="fill:gray; stroke:black">
+          <g>
+            <polygon points="0,0 0,100 100,100 100,0"/>
+            <text x="25" y="60" font-family="Verdana" font-size="20" fill="black">{{action.kind}}</text>
+          </g>
+        </svg>
+    </g>
+  </g>
+  <g *ngFor="let output of chip.output; index as y">
+      <svg [attr.x]="chip.design.length*150+150" [attr.y]="y*150+10" style="fill:gray; stroke:black">
+        <g>
+            <line x1="0"  y1="70" x2="100" y2="70" style="stroke:black;stroke-width:4"/>
+          <text x="25" y="60" font-family="Verdana" font-size="20" fill="black">{{output}}</text>
+        </g>
+      </svg>
+  </g>
+
+</svg>
+
+<div>
+  <mat-checkbox [(ngModel)]=a>A</mat-checkbox>
+</div>
+<div>
+  <mat-checkbox [(ngModel)]=b>B</mat-checkbox>
+</div>
+<div>
+  not({{a}}) = {{ test(not_chip) }}
+</div>
+<div>
+  and({{a}}, {{b}}) = {{ test(and_chip) }}
+</div>
+<div>
+  or({{a}}, {{b}}) = {{ test(or_chip) }}
+</div>
+
+<table>
+  <tr>
+    <th *ngFor="let wire of and_chip.input">{{ wire }}</th>
+    <th>and(a, b)</th>
+  </tr>
+  <tr *ngFor="let input of inputs(and_chip.input.length)">
+    <th *ngFor="let wire of input">{{wire}}</th>
+    <th>0</th>
+  </tr>
+</table>
+
+<div>
+  <span *ngFor="let input of or_chip.input">{{input}}</span>
+</div>
+<div *ngFor="let line of or_chip.design" style="margin: 20px;">
+
+  <span *ngFor="let action of line" style="border: 2px solid black; margin: 6px; padding: 5px;">
+    {{action.kind === "apply" ? action.chip.name : action.kind}}
+  </span>
+</div>
+
+
