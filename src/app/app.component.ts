@@ -3,9 +3,11 @@ import { Chip } from './chip';
 import { evaluate, bind } from './eval-chip';
 import { and_chip, or_chip, not_chip } from './chips';
 import { validate } from './test-chip';
-import { genCross, makeDrawPath, DrawPath } from './draw-wire';
+import { genCross, makeDrawPath, DrawPath, expand, Wire, connect } from './draw-wire';
 
-const testConnect: [number, number][] = [[10, 20], [5, 15], [20, 10]];
+const testConnect: Wire[] = [[20, 30], [0, 20], [40, 10]].map(x => {
+  return { source: x[0], dest: x[1] };
+});
 
 @Component({
   selector: 'app-root',
@@ -31,7 +33,7 @@ export class AppComponent implements OnInit {
   // preCrossDx: number;
   // crossDy: [number, number[]];
   // postDx: number;
-  paths: DrawPath[] = [
+  pathss: DrawPath[] = [
     // {
     //   initialY: -5,
     //   expansion: {
@@ -50,7 +52,7 @@ export class AppComponent implements OnInit {
       preExpDx: 10,
       expDy: 10,
       joinDx: 10,
-      crossDy: {init: -10, cross: [-5,-5]},
+      crossDy: {init: -10, cross: [-5, -5]},
       postDx: 5
     },
     // {
@@ -63,7 +65,7 @@ export class AppComponent implements OnInit {
     // }
   ].map(makeDrawPath);
 
-  // paths = connect(testConnect);
+  paths = connect(testConnect).map(makeDrawPath);
 
   // paths(wires: [number, number][]): Path[] {
   //   return [[10, this.shift]];
@@ -97,6 +99,7 @@ export class AppComponent implements OnInit {
     // console.log(this.test3);
     validate(or_chip);
     // connect(testConnect);
+    console.log("Test expand", expand(testConnect));
 
     console.log(this.pos);
   }
