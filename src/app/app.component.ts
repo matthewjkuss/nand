@@ -32,33 +32,33 @@ export class AppComponent implements OnInit {
   // crossDy: [number, number[]];
   // postDx: number;
   paths: DrawPath[] = [
+    // {
+    //   initialY: -5,
+    //   expansion: {
+    //     preDx: 5,
+    //     dy: {init: 5, rest: []},
+    //     postDx: 0,
+    //   },
+    //   cross: {
+    //     preDx: 15,
+    //     dy: {init: 5, rest: [3,3]},
+    //     postDx: 20
+    //   }
+    // },
     {
-      initialY: -5,
-      expansion: {
-        preDx: 5,
-        dy: {init: 5, rest: []},
-        postDx: 0,
-      },
-      cross: {
-        preDx: 15,
-        dy: {init: 5, rest: [3,3]},
-        postDx: 20
-      }
+      initY: 0,
+      preExpDx: 10,
+      expDy: 10,
+      joinDx: 10,
+      crossDy: {init: -10, cross: [-5,-5]},
+      postDx: 5
     },
     // {
-    //   initialY: 20,
+    //   initY: 50,
     //   preExpDx: 0,
-    //   expDy: 0,
-    //   preCrossDx: 20,
-    //   crossDy: [0, []],
-    //   postDx: 20
-    // },
-    // {
-    //   initialY: 50,
-    //   preExpDx: 0,
-    //   expDy: 0,
-    //   preCrossDx: 30,
-    //   crossDy: [-10, [-5, -5]],
+    //   expDy: 10,
+    //   joinDx: 30,
+    //   crossDy: {init: -10, cross: [-5, -5]},
     //   postDx: 20
     // }
   ].map(makeDrawPath);

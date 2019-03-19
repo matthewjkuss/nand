@@ -1,13 +1,21 @@
-interface Shift {
-  preDx: number;
-  dy: {init: number, rest: number[]};
+interface Path {
+  initY: number;
+  //
+  preExpDx: number;
+  expDy: number;
+  //
+  joinDx: number;
+  //
+  crossDy: {init: number, cross: number[]};
   postDx: number;
 }
 
-interface Path {
-  initialY: number;
-  expansion: Shift;
-  cross: Shift;
+interface Expanded {
+  initY: number;
+  preExpDx: number;
+  expDy: number;
+  postExpDx: number;
+  wire: Wire;
 }
 
 interface Wire {
@@ -41,67 +49,54 @@ function line(x1: number, y1: number, x2: number, y2: number): Line {
 
 const spacing = 5;
 
-function expandWire(point: Wire, midpoint: number, dest: number[]): [Wire, number] {
-  if (point[0] <= dest[0] - spacing) {
+function expandWire(point: Wire, midpoint: number, reservedPos: number[]): [Wire, number] {
+  // If wire is before any reserved spaces, go here
+  if (point[0] <= reservedPos[0] - spacing) {
     const newPoint = point[0];
-    dest.push(newPoint);
-    dest.sort(function(a, b) { return a - b; });
+    reservedPos.push(newPoint);
+    reservedPos.sort(function(a, b) { return a - b; });
     return [point, newPoint];
   }
-  for (let i = 0; i < dest.length - 1; i++) {
-    if (dest[i] < midpoint || dest[i] < point[0]) {
+  // Else, try to fit it in the middle
+  for (let i = 0; i < reservedPos.length - 1; i++) {
+    if (reservedPos[i] < midpoint || reservedPos[i] < point[0]) {
       continue;
     }
-    if (dest[i + 1] - dest[i] >= 2*spacing) {
-      const newPoint = (dest[i + 1] + dest[i]) / 2;
-      dest.push(newPoint);
-      dest.sort(function(a, b) { return a - b; });
+    if (reservedPos[i + 1] - reservedPos[i] >= 2 * spacing) {
+      const newPoint = (reservedPos[i + 1] + reservedPos[i]) / 2;
+      reservedPos.push(newPoint);
+      reservedPos.sort(function(a, b) { return a - b; });
       return [point, newPoint];
     }
   }
-  const newPoint = dest.slice(-1)[0] + spacing;
-  dest.push(newPoint);
-  dest.sort(function(a, b) { return a - b; });
+  // Still nothing? Put it at the end.
+  const newPoint = reservedPos.slice(-1)[0] + spacing;
+  reservedPos.push(newPoint);
+  reservedPos.sort(function(a, b) { return a - b; });
   return [point, newPoint];
 }
 
-function expand(pairs: Wire[]): { initial: number, expand: Shift, wire: Wire }[] {
+function expand(pairs: Wire[]): Expanded[] {
+  // Generate initial reserved positions list by taking all destinations and sort
   const reservedPositions: number[] = pairs.map(x => x.dest);
   reservedPositions.sort(function(a, b) { return a - b; });
 
+  // Generate a list of (wire, expanded y pos) pairs and sort
   const expedPts = pairs.map(x => expandWire(x, 0, reservedPositions));
-
   expedPts.sort(function(a, b) { return b[0].dest - a[0].dest; });
 
+  // Output Expanded partial path
   let depth = 5;
-
-  let partial = expedPts.map(x => {
+  return expedPts.map(x => {
     depth += 5;
-    return { initial: 0, wire: {source: x[1], dest: x[0][1]}, expand: {
-      preDx: depth,
-      dy: {init: x[1] - x[0][0], rest: []},//[x[1] - x[0][0], []],
-      postDx: expedPts.length * 5 - depth + 5,
-      // crossDy: [x[0][1] - x[1], []],
-      // postDx: 10
-    },
-    cross: {
-      preDx: depth,
-      dy: {init: x[1] - x[0][0], rest: []},//[x[1] - x[0][0], []],
-      postDx: expedPts.length * 5 - depth + 5}};
-  } );
-
-  depth = 5;
-
-  // let next = partial.map(x => {
-  //   if (x[0] < x[1]) {
-  //     return { preDx: depth, crossDy: x[1] - x[0], }
-  //   }
-
-  // });
-
-  console.log(expedPts, partial);
-
-  return partial;
+    return {
+      initY: x[0][0],
+      preExpDx: depth,
+      expDy: x[1] - x[0][0],
+      postExpDx: expedPts.length * 5 - depth + 5,
+      wire: {source: x[1], dest: x[0][1]}
+    };
+  });
 }
 
 // function cross(expanedWires: { initial: number, expand: Shift, wire: Wire }[]): Path {
@@ -113,46 +108,46 @@ function expand(pairs: Wire[]): { initial: number, expand: Shift, wire: Wire }[]
 const crossover = 10;
 
 export function makeDrawPath(path: Path): DrawPath {
-  let yShift: number = path.cross.dy.init;
-  const y = path.cross.dy.rest.map(x => {
+  let yShift: number = path.crossDy.init;
+  const y = path.crossDy.cross.map(x => {
     yShift += x + (x > 0 ? crossover : -crossover);
     return line(
-      300 + path.expansion.preDx + path.cross.preDx,
-      200 + path.initialY + path.expansion.dy[0] + yShift - x,
-      300 + path.expansion.preDx + path.cross.preDx,
-      200 + path.initialY + path.expansion.dy[0] + yShift
+      300 + path.preExpDx + path.joinDx,
+      200 + path.initY + path.expDy + yShift - x,
+      300 + path.preExpDx + path.joinDx,
+      200 + path.initY + path.expDy + yShift
     );
   });
   return {
     preExpDx: line(
       300,
-      200 + path.initialY,
-      300 + path.expansion.preDx,
-      200 + path.initialY
+      200 + path.initY,
+      300 + path.preExpDx,
+      200 + path.initY
     ),
     expDy: line(
-      300 + path.expansion.preDx,
-      200 + path.initialY,
-      300 + path.expansion.preDx,
-      200 + path.initialY + path.expansion.dy[0]
+      300 + path.preExpDx,
+      200 + path.initY,
+      300 + path.preExpDx,
+      200 + path.initY + path.expDy
     ),
     preCrossDx: line(
-      300 + path.expansion.preDx,
-      200 + path.initialY + path.expansion.dy[0],
-      300 + path.expansion.preDx + path.cross.preDx,
-      200 + path.initialY + path.expansion.dy[0]
+      300 + path.preExpDx,
+      200 + path.initY + path.expDy,
+      300 + path.preExpDx + path.joinDx,
+      200 + path.initY + path.expDy
     ),
     crossDy: [line(
-      300 + path.expansion.preDx + path.cross.preDx,
-      200 + path.initialY + path.expansion.dy[0],
-      300 + path.expansion.preDx + path.cross.preDx,
-      200 + path.initialY + path.expansion.dy[0] + path.cross.dy[0]
+      300 + path.preExpDx + path.joinDx,
+      200 + path.initY + path.expDy,
+      300 + path.preExpDx + path.joinDx,
+      200 + path.initY + path.expDy + path.crossDy.init
     ), y],
     postDx: line(
-      300 + path.expansion.preDx + path.cross.preDx,
-      200 + path.initialY + path.expansion.dy[0] + yShift,
-      300 + path.expansion.preDx + path.cross.preDx + path.cross.postDx,
-      200 + path.initialY + path.expansion.dy[0] + yShift
+      300 + path.preExpDx + path.joinDx,
+      200 + path.initY + path.expDy + yShift,
+      300 + path.preExpDx + path.joinDx + path.postDx,
+      200 + path.initY + path.expDy + yShift
     ),
   };
 }
