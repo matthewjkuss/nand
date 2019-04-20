@@ -3,9 +3,12 @@ import { Chip } from './chip';
 import { evaluate, bind } from './eval-chip';
 import { and_chip, or_chip, not_chip } from './chips';
 import { validate } from './test-chip';
-import { genCross, makeDrawPath, DrawPath, expand, Wire, connect } from './draw-wire';
+import { genCross, makeDrawPath, DrawPath, expand, Wire, connect, idxMap, genSortOrder, orderedMap } from './draw-wire';
 
-const testConnect: Wire[] = [[20, 30], [0, 20], [40, 10]].map(x => {
+// const testConnect: Wire[] = [[0, 40], [20, 20], [40, 0]].map(x => {
+//   return { source: x[0], dest: x[1] };
+// });
+const testConnect: Wire[] = [[0, 0], [30, 20], [50, -10]].map(x => {
   return { source: x[0], dest: x[1] };
 });
 
@@ -95,11 +98,19 @@ export class AppComponent implements OnInit {
   // }
 
   ngOnInit() {
+    const mylist = ['Andy', 'Bob', 'Carl', 'Derek'];
+    const lastletter = genSortOrder(mylist, a => a.substr(-1).charCodeAt(0));
+    const secondletter = genSortOrder(mylist, a => a.charCodeAt(1));
+    // console.log(idxMap(mylist, lastletter, x => {
+    //   return [x + ' is cool, but '].concat(idxMap(mylist, secondletter, x => x + ' is great!'));
+    // }));
+    // console.log(orderedMap(mylist, x => x.charCodeAt(1), (x, i) => (i === 0 ? 'Hi ' : 'Also, hi ') + x + '!'));
+    // console.log(idxMap(mylist, secondletter, x => x + ' is great!'));
     // console.log(this.test1, this.test2, this.test3);
     // console.log(this.test3);
-    validate(or_chip);
+    // validate(or_chip);
     // connect(testConnect);
-    console.log("Test expand", expand(testConnect));
+    // console.log("Test expand", expand(testConnect));
 
     console.log(this.pos);
   }
