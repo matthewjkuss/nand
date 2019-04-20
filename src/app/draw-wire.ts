@@ -55,7 +55,7 @@ function line(x1: number, y1: number, x2: number, y2: number): Line {
   };
 }
 
-const spacing = 10;
+const spacing = 15;
 const crossover = 10;
 
 function expandWire(point: Wire, midpoint: number, reservedPos: number[]): [Wire, number] {
@@ -146,46 +146,42 @@ export function expand(pairs: Wire[]): Expanded[] {
   });
 }
 
-function pos(wire) {
+function pos(wire: any) {
   return wire.initY + wire.expDy;
 }
 
 function cross(expandedWires: Expanded[]): Path[] {
   let depth = 5;
-  // expandedWires.sort(function(a, b){ return a.wire.dest - b.wire.dest; });
-  console.log('Presort', expandedWires);
-  // return expandedWires.map((wire, wi) => {
-  return orderedMap(expandedWires, x => x.wire.dest, (wire, wi) => {
+  return orderedMap(expandedWires, x => (pos(x.wire) > x.wire.dest ? -Math.exp(x.wire.dest) : Math.exp(x.wire.dest)), wire => {
     depth += 15;
     let init = 0;
     let inited = false;
     const cross = [];
     let dy = pos(wire);
-    // expandedWires.sort(function(a, b){ return pos(a) - pos(b); });
 
-    orderedMap(expandedWires, x => -pos(x), (otherWire, owi) => {
-    // expandedWires.map((otherWire, owi) => {
-      console.log('dy', dy, 'ody', pos(otherWire));
-      // Don't need to cross wire over itself
-      // if (wi === owi) {
-      //   return;
-      // }
-      // If point lower than wire, no need to cross
-      if (dy > pos(otherWire) && pos(otherWire) > wire.wire.dest) {
+    const dir = (pos(wire) > wire.wire.dest) ? -1 : 1;
+
+    orderedMap(expandedWires, x => dir * pos(x), otherWire => {
+      const hasNotCrossed: boolean = dir * dy < dir * pos(otherWire);
+      const needsToCross: boolean = dir * pos(otherWire) < dir * wire.wire.dest;
+
+
+      if (hasNotCrossed && needsToCross) {
         if (inited) {
-          cross.push(pos(otherWire) + crossover + crossover/2 - dy);
-          dy = pos(otherWire) + crossover/2;
+          cross.push(pos(otherWire) - dir * crossover - dir * crossover/2 - dy);
+          dy = pos(otherWire) - dir * crossover/2;
         } else {
-          init = pos(otherWire) + crossover/2 - dy;
-          dy = pos(otherWire) + crossover/2;
+          init = pos(otherWire) - dir * crossover/2 - dy;
+          dy = pos(otherWire) - dir * crossover/2;
 
           inited = true;
         }
       }
+      console.log('At:', dy, 'Goal:', wire.wire.dest, inited);
     });
     console.log('Post', init);
     if (inited) {
-      cross.push(wire.wire.dest - dy + crossover);
+      cross.push(wire.wire.dest - dy - dir * crossover);
     } else {
       init = wire.wire.dest - dy;
     }

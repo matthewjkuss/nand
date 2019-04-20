@@ -5,12 +5,12 @@ import { and_chip, or_chip, not_chip } from './chips';
 import { validate } from './test-chip';
 import { genCross, makeDrawPath, DrawPath, expand, Wire, connect, idxMap, genSortOrder, orderedMap } from './draw-wire';
 
-// const testConnect: Wire[] = [[0, 40], [20, 20], [40, 0]].map(x => {
-//   return { source: x[0], dest: x[1] };
-// });
-const testConnect: Wire[] = [[0, 0], [30, 20], [50, -10]].map(x => {
+const testConnect: Wire[] = [[0, 60], [30, 30], [60, 0]].map(x => {
   return { source: x[0], dest: x[1] };
 });
+// const testConnect: Wire[] = [[0, 0], [30, 20], [50, -10]].map(x => {
+//   return { source: x[0], dest: x[1] };
+// });
 
 @Component({
   selector: 'app-root',
