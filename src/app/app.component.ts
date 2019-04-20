@@ -3,12 +3,12 @@ import { Chip } from './chip';
 import { evaluate, bind } from './eval-chip';
 import { and_chip, or_chip, not_chip } from './chips';
 import { validate } from './test-chip';
-import { genCross, makeDrawPath, DrawPath, expand, Wire, connect, idxMap, genSortOrder, orderedMap } from './draw-wire';
+import { genCross, makeDrawPath, DrawPath, expand, PathGoal, connect, idxMap, genSortOrder, orderedMap } from './draw-wire';
 
-const testConnect: Wire[] = [[0, 60], [30, 30], [60, 0]].map(x => {
+const testConnect: PathGoal[] = [[0, 60], [30, 30], [60, 0]].map(x => {
   return { source: x[0], dest: x[1] };
 });
-// const testConnect: Wire[] = [[0, 0], [30, 20], [50, -10]].map(x => {
+// const testConnect: PathGoal[] = [[0, 0], [30, 20], [50, -10]].map(x => {
 //   return { source: x[0], dest: x[1] };
 // });
 
@@ -98,14 +98,16 @@ export class AppComponent implements OnInit {
   // }
 
   ngOnInit() {
-    const mylist = ['Andy', 'Bob', 'Carl', 'Derek'];
-    const lastletter = genSortOrder(mylist, a => a.substr(-1).charCodeAt(0));
-    const secondletter = genSortOrder(mylist, a => a.charCodeAt(1));
+    // const mylist: String[] = ['Andy', 'Bob', 'Carl', 'Derek'];
+    // const lastletter = genSortOrder(mylist, a => a.substr(-1).charCodeAt(0));
+    // const secondletter = genSortOrder(mylist, a => a.charCodeAt(1));
     // console.log(idxMap(mylist, lastletter, x => {
     //   return [x + ' is cool, but '].concat(idxMap(mylist, secondletter, x => x + ' is great!'));
     // }));
     // console.log(orderedMap(mylist, x => x.charCodeAt(1), (x, i) => (i === 0 ? 'Hi ' : 'Also, hi ') + x + '!'));
     // console.log(idxMap(mylist, secondletter, x => x + ' is great!'));
+    // orderedMap(mylist, x => x.charCodeAt(0), x => {x = 'x'; console.log(x)});
+    // console.log(mylist);
     // console.log(this.test1, this.test2, this.test3);
     // console.log(this.test3);
     // validate(or_chip);

@@ -1,7 +1,11 @@
-import { mapToExpression } from "@angular/compiler/src/render3/view/util";
+/** Represents a path. */
+export interface Path {
+  pathGoal: PathGoal;
+  pathInstance: PathInstance;
+}
 
 /** Defines a wire path between two columns of logic chips. */
-interface Path {
+interface PathInstance {
   initY: number;
   //
   preExpDx: number;
@@ -13,22 +17,17 @@ interface Path {
   postDx: number;
 }
 
-interface Expanded {
-  initY: number;
-  preExpDx: number;
-  expDy: number;
-  postExpDx: number;
-  wire: Wire;
-}
-
-/** Represents the start and end points of a given wire. Note that both source
-    and dest should be unique for each collection of connections between logic
-    gate columns. */
-export interface Wire {
+/**
+ * Represents the start and end points of a given wire. Note that both source
+ * and dest should be unique for each collection of connections between logic
+ * gate columns.
+ */
+export interface PathGoal {
   source: number;
   dest: number;
 }
 
+/** Represents a line from (x1, y1) to (x2, y2). */
 interface Line {
   x1: number;
   x2: number;
@@ -45,20 +44,29 @@ export interface DrawPath {
   postDx: Line;
 }
 
-/** Constructs a Line object from the four coordinates of two points. */
-function line(x1: number, y1: number, x2: number, y2: number): Line {
+/** Spacing to leave around wires in expansion stage. */
+const spacing = 15;
+
+/** Size of crossover in pixels. */
+const crossover = 10;
+
+function emptyPathInstance(): PathInstance {
   return {
-    x1: x1,
-    x2: x2,
-    y1: y1,
-    y2: y2,
+    initY: 0,
+    preExpDx: 0,
+    expDy: 0,
+    joinDx: 0,
+    crossDy: {init: 0, cross: []},
+    postDx: 0,
   };
 }
 
-const spacing = 15;
-const crossover = 10;
+export function connect(pairs: PathGoal[]): PathInstance[] {
+  const input: Path[] = pairs.map(x => ({pathGoal: x, pathInstance: emptyPathInstance()}));
+  return cross(expand(input));
+}
 
-function expandWire(point: Wire, midpoint: number, reservedPos: number[]): [Wire, number] {
+function expandWire(point: PathGoal, midpoint: number, reservedPos: number[]): [PathGoal, number] {
   // If wire is before any reserved spaces, go here
   // if (point[0] <= reservedPos[0] - spacing) {
 
@@ -67,7 +75,7 @@ function expandWire(point: Wire, midpoint: number, reservedPos: number[]): [Wire
   //   reservedPos.sort(function(a, b) { return a - b; });
   //   return [point, newPoint];
   // }
-  console.log(midpoint, point.source)
+  // console.log(midpoint, point.source)
   if (point.source === point.dest) {
     return [point, point.source];
   }
@@ -80,12 +88,12 @@ function expandWire(point: Wire, midpoint: number, reservedPos: number[]): [Wire
         const newPoint = (reservedPos[i + 1] + reservedPos[i]) / 2;
         reservedPos.push(newPoint);
         reservedPos.sort(function(a, b) { return a - b; });
-        console.log("middle going down")
+        // console.log('middle going down')
         return [point, newPoint];
       }
     }
     const newPoint = reservedPos.slice(-1)[0] + spacing;
-    console.log(point, reservedPos, newPoint)
+    // console.log(point, reservedPos, newPoint)
     reservedPos.push(newPoint);
     reservedPos.sort(function(a, b) { return a - b; });
     return [point, newPoint];
@@ -98,12 +106,12 @@ function expandWire(point: Wire, midpoint: number, reservedPos: number[]): [Wire
         const newPoint = (reservedPos[i] - reservedPos[i-1]) / 2;
         reservedPos.push(newPoint);
         reservedPos.sort(function(a, b) { return a - b; });
-        console.log("middle going up")
+        // console.log("middle going up")
         return [point, newPoint];
       }
     }
     const newPoint = reservedPos[0] - spacing;
-    console.log(point, reservedPos, newPoint)
+    // console.log(point, reservedPos, newPoint)
     reservedPos.push(newPoint);
     reservedPos.sort(function(a, b) { return a - b; });
     return [point, newPoint];
@@ -114,93 +122,129 @@ function expandWire(point: Wire, midpoint: number, reservedPos: number[]): [Wire
   // console.log("blam")
 }
 
-function abs(a: number) {
-  return a >= 0 ? a : -a;
-}
+// function abs(a: number) {
+//   return a >= 0 ? a : -a;
+// }
 
-export function expand(pairs: Wire[]): Expanded[] {
+export function expand(paths: Path[]): Path[] {
   // Generate initial reserved positions list by taking all destinations and sort
-  const reservedPositions: number[] = pairs.map(x => x.dest);
+  const reservedPositions: number[] = paths.map(x => x.pathGoal.dest);
   reservedPositions.sort(function(a, b) { return a - b; });
 
   // Sort pairs based on source position
-  pairs.sort(function(a, b) { return a.source - b.source; });
+  // paths.sort(function(a, b) { return a.source - b.source; });
 
-  const midpoint = abs(pairs[pairs.length-1].source - pairs[0].source)/2;
+  const midpoint = Math.abs(
+    paths[paths.length - 1].pathGoal.source - paths[0].pathGoal.source
+  ) / 2;
 
   // Generate a list of (wire, expanded y pos) pairs and sort
-  const expedPts = pairs.map(x => expandWire(x, midpoint, reservedPositions));
-  expedPts.sort(function(a, b) { return b[0].source - a[0].source; });
+  // const expedPts = paths.map(x => expandWire(x.pathGoal, midpoint, reservedPositions));
+  const expedPts: [PathGoal, number][] = orderedMap(
+    paths,
+    path => path.pathGoal.source,
+    path => expandWire(path.pathGoal, midpoint, reservedPositions)
+  );
+  // expedPts.sort(function(a, b) { return b[0].source - a[0].source; });
 
   // Output Expanded partial path
   let depth = 5;
   return expedPts.map(x => {
     depth += 5;
     return {
-      initY: x[0].source,
-      preExpDx: depth,
-      expDy: x[1] - x[0].source,
-      postExpDx: expedPts.length * 5 - depth + 5,
-      wire: {source: x[1], dest: x[0].dest}
+      pathInstance: {
+        initY: x[0].source,
+        preExpDx: depth,
+        expDy: x[1] - x[0].source,
+        joinDx: expedPts.length * 5 - depth + 5,
+        crossDy: {init: 0, cross: []},
+        postDx: 0,
+      },
+      pathGoal: {
+        source: x[1],
+        dest: x[0].dest
+      }
     };
   });
 }
 
-function pos(wire: any) {
-  return wire.initY + wire.expDy;
+function pos(wire: Path) {
+  return wire.pathInstance.initY
+    + wire.pathInstance.expDy
+    + wire.pathInstance.crossDy.init
+    + wire.pathInstance.crossDy.cross.reduce((acc, cur) =>
+      acc + cur + (cur > 0 ? 1 : -1) * crossover, 0);
 }
 
-function cross(expandedWires: Expanded[]): Path[] {
+function cross(paths: Path[]): PathInstance[] {
   let depth = 5;
-  return orderedMap(expandedWires, x => (pos(x.wire) > x.wire.dest ? -Math.exp(x.wire.dest) : Math.exp(x.wire.dest)), wire => {
+
+  function upThenDownOrder(x: Path): number {
+    const positiveOrder = Math.exp(x.pathGoal.dest);
+    return (pos(x) > x.pathGoal.dest ? -1 : 1) * positiveOrder;
+  }
+
+  orderedMap(paths, upThenDownOrder, crosser => {
     depth += 15;
     let init = 0;
     let inited = false;
     const cross = [];
-    let dy = pos(wire);
+    let dy = pos(crosser);
 
-    const dir = (pos(wire) > wire.wire.dest) ? -1 : 1;
+    const dir = (pos(crosser) > crosser.pathGoal.dest) ? -1 : 1;
 
-    orderedMap(expandedWires, x => dir * pos(x), otherWire => {
-      const hasNotCrossed: boolean = dir * dy < dir * pos(otherWire);
-      const needsToCross: boolean = dir * pos(otherWire) < dir * wire.wire.dest;
-
+    orderedMap(paths, x => dir * pos(x), crossee => {
+      dy = pos(crosser);
+      const hasNotCrossed: boolean = dir * dy < dir * pos(crossee);
+      const needsToCross: boolean = dir * pos(crossee) < dir * crosser.pathGoal.dest;
 
       if (hasNotCrossed && needsToCross) {
         if (inited) {
-          cross.push(pos(otherWire) - dir * crossover - dir * crossover/2 - dy);
-          dy = pos(otherWire) - dir * crossover/2;
+          crosser.pathInstance.crossDy.cross.push(pos(crossee) - dir * crossover - dir * crossover/2 - dy);
+          // dy = pos(crossee) - dir * crossover/2;
         } else {
-          init = pos(otherWire) - dir * crossover/2 - dy;
-          dy = pos(otherWire) - dir * crossover/2;
+          crosser.pathInstance.crossDy.init = pos(crossee) - dir * crossover/2 - dy;
+          // dy = pos(crossee) - dir * crossover/2;
 
           inited = true;
         }
       }
-      console.log('At:', dy, 'Goal:', wire.wire.dest, inited);
+      console.log('At:', dy, 'Goal:', crosser.pathGoal.dest, inited);
     });
+    dy = pos(crosser);
     console.log('Post', init);
     if (inited) {
-      cross.push(wire.wire.dest - dy - dir * crossover);
+      crosser.pathInstance.crossDy.cross.push(crosser.pathGoal.dest - dy - dir * crossover);
     } else {
-      init = wire.wire.dest - dy;
+      crosser.pathInstance.crossDy.init = crosser.pathGoal.dest - dy;
     }
-    return {
-      initY: wire.initY,
-      preExpDx: wire.preExpDx,
-      expDy: wire.expDy,
-      joinDx: wire.postExpDx + depth,
-      crossDy: {init: init, cross: cross},
-      postDx: 30,
-    };
+    crosser.pathInstance.joinDx += depth;
+    crosser.pathInstance.postDx += 70-depth;
+    // return path;
+    // return {
+    //   initY: crosser.pathInstance.initY,
+    //   preExpDx: crosser.pathInstance.preExpDx,
+    //   expDy: crosser.pathInstance.expDy,
+    //   joinDx: crosser.pathInstance.joinDx + depth,
+    //   crossDy: {init: init, cross: cross},
+    //   postDx: 30,
+    // };
   });
+  return paths.map(x => x.pathInstance);
 }
 
-export function connect(pairs: Wire[]): Path[] {
-  return cross(expand(pairs));
+
+/** Constructs a Line object from the four coordinates of two points. */
+function line(x1: number, y1: number, x2: number, y2: number): Line {
+  return {
+    x1: x1,
+    x2: x2,
+    y1: y1,
+    y2: y2,
+  };
 }
 
-export function makeDrawPath(path: Path): DrawPath {
+export function makeDrawPath(path: PathInstance): DrawPath {
   let yShift: number = path.crossDy.init;
   const y = path.crossDy.cross.map(x => {
     yShift += x + (x > 0 ? crossover : -crossover);
