@@ -5,12 +5,28 @@ import { and_chip, or_chip, not_chip } from './chips';
 import { validate } from './test-chip';
 import { genCross, makeDrawPath, DrawPath, expand, PathGoal, connect, idxMap, genSortOrder, orderedMap } from './draw-wire';
 
-const testConnect: PathGoal[] = [[0, 60], [30, 30], [60, 0]].map(x => {
-  return { source: x[0], dest: x[1] };
-});
+// const testConnect: PathGoal[] = [[0, 60], [30, 30], [60, 0]].map(x => {
+//   return { source: x[0], dest: x[1] };
+// });
 // const testConnect: PathGoal[] = [[0, 0], [30, 20], [50, -10]].map(x => {
 //   return { source: x[0], dest: x[1] };
 // });
+const slots = 20;
+
+// const testConnect: PathGoal[] = Array.from(Array(3).keys()).map(x => {
+//   return { source: Math.random()*200, dest: 200 * Math.round(Math.random() * slots) / slots};
+// });
+
+const testConnect = Array.from(Array(6).keys())
+  .sort((a,b) => Math.random()-0.5)
+  .map((x, idx) => ({source: idx*15, dest: x*15}))
+  // .sort((a,b) => Math.random()-0.5).slice(5);
+
+// const testConnect = [
+//   {source: 1.080518276655007, dest: 59.74135806963552},
+//  {source: 85.2384239438265, dest: 77.14243567205759},
+//  {source: 60.016805256118076, dest: 4.604772807473179},
+// ];
 
 @Component({
   selector: 'app-root',
@@ -113,6 +129,8 @@ export class AppComponent implements OnInit {
     // validate(or_chip);
     // connect(testConnect);
     // console.log("Test expand", expand(testConnect));
+
+    console.log(testConnect);
 
     console.log(this.pos);
   }

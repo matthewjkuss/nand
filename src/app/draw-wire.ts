@@ -76,10 +76,11 @@ function expandWire(point: PathGoal, midpoint: number, reservedPos: number[]): [
   //   return [point, newPoint];
   // }
   // console.log(midpoint, point.source)
-  if (point.source === point.dest) {
-    return [point, point.source];
-  }
+  // if (point.source === point.dest) {
+  //   return [point, point.source];
+  // }
   if (point.source > midpoint) {
+    console.log('lower');
     for (let i = 0; i < reservedPos.length - 1; i++) {
       if (reservedPos[i] < midpoint || reservedPos[i] < point[0]) {
         continue;
@@ -98,6 +99,7 @@ function expandWire(point: PathGoal, midpoint: number, reservedPos: number[]): [
     reservedPos.sort(function(a, b) { return a - b; });
     return [point, newPoint];
   } else {
+    console.log('higher')
     for (let i = reservedPos.length - 1; i > 0 ; i--) {
       if (reservedPos[i] > midpoint || reservedPos[i] > point[0]) {
         continue;
@@ -132,25 +134,28 @@ export function expand(paths: Path[]): Path[] {
   reservedPositions.sort(function(a, b) { return a - b; });
 
   // Sort pairs based on source position
-  // paths.sort(function(a, b) { return a.source - b.source; });
+  paths.sort(function(a, b) { return a.pathGoal.source - b.pathGoal.source; });
 
   const midpoint = Math.abs(
-    paths[paths.length - 1].pathGoal.source - paths[0].pathGoal.source
+    paths[paths.length - 1].pathGoal.source + paths[0].pathGoal.source
   ) / 2;
+
+  console.log('mid', midpoint, paths[paths.length - 1].pathGoal.source, paths[0].pathGoal.source);
 
   // Generate a list of (wire, expanded y pos) pairs and sort
   // const expedPts = paths.map(x => expandWire(x.pathGoal, midpoint, reservedPositions));
   const expedPts: [PathGoal, number][] = orderedMap(
     paths,
-    path => path.pathGoal.source,
+    // path => path.pathGoal.source,
+    path => path.pathGoal.source < midpoint ? -path.pathGoal.source - 200 : path.pathGoal.source,
     path => expandWire(path.pathGoal, midpoint, reservedPositions)
   );
   // expedPts.sort(function(a, b) { return b[0].source - a[0].source; });
 
   // Output Expanded partial path
-  let depth = 5;
+  let depth = 40;
   return expedPts.map(x => {
-    depth += 5;
+    depth -= 5;
     return {
       pathInstance: {
         initY: x[0].source,
@@ -180,55 +185,54 @@ function cross(paths: Path[]): PathInstance[] {
   let depth = 5;
 
   function upThenDownOrder(x: Path): number {
-    const positiveOrder = Math.exp(x.pathGoal.dest);
-    return (pos(x) > x.pathGoal.dest ? -1 : 1) * positiveOrder;
+    // const positiveOrder = Math.exp(x.pathGoal.dest);
+    const positiveOrder = x.pathGoal.dest;
+    // return (pos(x) > x.pathGoal.dest ? -1 : 1) + positiveOrder;
+    return (pos(x) > x.pathGoal.dest ? 0 : 200)
+      + (pos(x) > x.pathGoal.dest ? 1 : -1) * positiveOrder;
   }
-
+  console.log(genSortOrder(paths, upThenDownOrder))
   orderedMap(paths, upThenDownOrder, crosser => {
+
     depth += 15;
-    let init = 0;
-    let inited = false;
-    const cross = [];
+    let hasMoved = false;
     let dy = pos(crosser);
 
-    const dir = (pos(crosser) > crosser.pathGoal.dest) ? -1 : 1;
+    // Sets whether we need to cross increasing y or decreasing y.
+    const direction = (pos(crosser) > crosser.pathGoal.dest) ? -1 : 1;
 
-    orderedMap(paths, x => dir * pos(x), crossee => {
-      dy = pos(crosser);
-      const hasNotCrossed: boolean = dir * dy < dir * pos(crossee);
-      const needsToCross: boolean = dir * pos(crossee) < dir * crosser.pathGoal.dest;
-
-      if (hasNotCrossed && needsToCross) {
-        if (inited) {
-          crosser.pathInstance.crossDy.cross.push(pos(crossee) - dir * crossover - dir * crossover/2 - dy);
-          // dy = pos(crossee) - dir * crossover/2;
+    // Cross the "crosser" over each each necessary "crossee"
+    orderedMap(paths, x => direction * pos(x), crossee => {
+      if (crosser.pathGoal.dest === crossee.pathGoal.dest) {
+        return;
+      }
+      const hasNotCrossedCrossee: boolean =
+        direction * dy < direction * pos(crossee);
+      const needsToCrossCrossee: boolean =
+        direction * pos(crossee) < direction * crosser.pathGoal.dest;
+      // If crossing, cross
+      if (hasNotCrossedCrossee && needsToCrossCrossee) {
+        if (hasMoved) {
+          crosser.pathInstance.crossDy.cross.push(
+            pos(crossee) - direction * 1.5 * crossover - dy
+          );
         } else {
-          crosser.pathInstance.crossDy.init = pos(crossee) - dir * crossover/2 - dy;
-          // dy = pos(crossee) - dir * crossover/2;
-
-          inited = true;
+          crosser.pathInstance.crossDy.init =
+            pos(crossee) - direction * 0.5 * crossover - dy;
+          hasMoved = true;
         }
       }
-      console.log('At:', dy, 'Goal:', crosser.pathGoal.dest, inited);
+      // Update dy
+      dy = pos(crosser);
     });
-    dy = pos(crosser);
-    console.log('Post', init);
-    if (inited) {
-      crosser.pathInstance.crossDy.cross.push(crosser.pathGoal.dest - dy - dir * crossover);
+    if (hasMoved) {
+      crosser.pathInstance.crossDy.cross.push(crosser.pathGoal.dest - dy - direction * crossover);
     } else {
       crosser.pathInstance.crossDy.init = crosser.pathGoal.dest - dy;
     }
     crosser.pathInstance.joinDx += depth;
-    crosser.pathInstance.postDx += 70-depth;
-    // return path;
-    // return {
-    //   initY: crosser.pathInstance.initY,
-    //   preExpDx: crosser.pathInstance.preExpDx,
-    //   expDy: crosser.pathInstance.expDy,
-    //   joinDx: crosser.pathInstance.joinDx + depth,
-    //   crossDy: {init: init, cross: cross},
-    //   postDx: 30,
-    // };
+    crosser.pathInstance.postDx += 100 - depth;
+    console.log('Show', crosser.pathGoal.dest, pos(crosser))
   });
   return paths.map(x => x.pathInstance);
 }
