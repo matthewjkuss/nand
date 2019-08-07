@@ -1,5 +1,19 @@
 import { Chip, Apply, Action } from './chip';
-import { findLast } from '@angular/compiler/src/directive_resolver';
+
+type Check = NotSameLength | Different | Equal;
+
+interface NotSameLength {
+  kind: 'notSameLength';
+}
+
+interface Different {
+  kind: 'different';
+  difference: number[];
+}
+
+interface Equal {
+  kind: 'equal';
+}
 
 function testInputBijectivity(app: Apply): string {
   return app.chip.input
@@ -103,39 +117,6 @@ function listOutput(action: Action): string[] {
   }
 }
 
-interface NotSameLength {
-  kind: 'notSameLength';
-}
-
-interface Different {
-  kind: 'different';
-  difference: number[];
-}
-
-interface Equal {
-  kind: 'equal';
-}
-
-type Check = NotSameLength | Different | Equal;
-
-// function checkEqual(a: any, b: any): Check {
-//   if (a.length !== b.length) {
-//     return { kind: 'notSameLength' };
-//   }
-//   a.sort();
-//   b.sort();
-//   const difference = [];
-//   for (let i = 0; i < a.length; i++) {
-//     if (a[i] !== b[i]) {
-//       difference.push(i);
-//     }
-//   }
-//   if (difference.length !== 0) {
-//     return { kind: 'different', difference: difference };
-//   }
-//   return { kind: 'equal' };
-// }
-
 function checkEqual(output: any, input: any): string {
   return input.map(x => output.find(y => x === y) ? '' : '\t\tERROR - : Cannot find output to pair to input "' + x + '".\n')
    + output.map(x => input.find(y => x === y) ? '' : '\t\tWarning - : Output "' + x + '" is unused.\n');
@@ -155,7 +136,6 @@ export function validate(chip: Chip): boolean {
       }
     });
   });
-  // .reduce((a, b) => a.concat([b]), [])
   const pairs: string[][] = [chip.input]
     .concat(
       chip.design

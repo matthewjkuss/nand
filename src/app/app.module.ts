@@ -6,10 +6,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MatCheckboxModule, MatSliderModule } from '@angular/material';
 import { FormsModule } from '@angular/forms';
+import { MapDisplayComponent } from './map-display/map-display.component';
+import { ChipDisplayComponent } from './chip-display/chip-display.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    MapDisplayComponent,
+    ChipDisplayComponent
   ],
   imports: [
     BrowserModule,

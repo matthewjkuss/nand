@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Chip } from './chip';
 import { evaluate, bind } from './eval-chip';
-import { and_chip, or_chip, not_chip } from './chips';
+import { and_chip, or_chip, not_chip, mux_chip } from './chips';
 import { validate } from './test-chip';
 import { genCross, makeDrawPath, DrawPath, expand, PathGoal, connect, idxMap, genSortOrder, orderedMap } from './draw-wire';
 
@@ -19,7 +19,7 @@ const slots = 20;
 
 const testConnect = Array.from(Array(6).keys())
   .sort((a,b) => Math.random()-0.5)
-  .map((x, idx) => ({source: idx*15, dest: x*15}))
+  .map((x, idx) => ({source: idx*15, dest: x*35}))
   // .sort((a,b) => Math.random()-0.5).slice(5);
 
 // const testConnect = [
@@ -41,31 +41,13 @@ export class AppComponent implements OnInit {
   and_chip = and_chip;
   or_chip = or_chip;
   not_chip = not_chip;
+  mux_chip = mux_chip;
 
   genCross = genCross;
 
-  chip = and_chip;
+  chip = mux_chip;
 
-  // initialY: number;
-  // preExpDx: number;
-  // expDy: number;
-  // preCrossDx: number;
-  // crossDy: [number, number[]];
-  // postDx: number;
   pathss: DrawPath[] = [
-    // {
-    //   initialY: -5,
-    //   expansion: {
-    //     preDx: 5,
-    //     dy: {init: 5, rest: []},
-    //     postDx: 0,
-    //   },
-    //   cross: {
-    //     preDx: 15,
-    //     dy: {init: 5, rest: [3,3]},
-    //     postDx: 20
-    //   }
-    // },
     {
       initY: 0,
       preExpDx: 10,
@@ -74,14 +56,6 @@ export class AppComponent implements OnInit {
       crossDy: {init: -10, cross: [-5, -5]},
       postDx: 5
     },
-    // {
-    //   initY: 50,
-    //   preExpDx: 0,
-    //   expDy: 10,
-    //   joinDx: 30,
-    //   crossDy: {init: -10, cross: [-5, -5]},
-    //   postDx: 20
-    // }
   ].map(makeDrawPath);
 
   paths = connect(testConnect).map(makeDrawPath);
@@ -109,9 +83,9 @@ export class AppComponent implements OnInit {
 
   // test1 = evaluate(not, [bound('a', true)]);
   // test2 = evaluate(not, [bound('a', false)]);
-  // test(chip: Chip) {
-  //   return evaluate(chip, [bind('a', this.a), bind('b', this.b)])[0].value;
-  // }
+  test(chip: Chip) {
+    return evaluate(chip, [bind('a', this.a), bind('b', this.b)])[0].value;
+  }
 
   ngOnInit() {
     // const mylist: String[] = ['Andy', 'Bob', 'Carl', 'Derek'];
@@ -126,7 +100,7 @@ export class AppComponent implements OnInit {
     // console.log(mylist);
     // console.log(this.test1, this.test2, this.test3);
     // console.log(this.test3);
-    // validate(or_chip);
+    validate(or_chip);
     // connect(testConnect);
     // console.log("Test expand", expand(testConnect));
 

@@ -1,16 +1,18 @@
 import { Wire, Chip, Apply, Nand, Action } from './chip';
 
+/** A specifies the boolean value assigned to a named variable. */
 interface BoundVar {
   name: String;
   value: Boolean;
 }
 
+/** Using its name, get the value of a variable from a given state. */
 function getBound(state: BoundVar[], name: String): Boolean {
   return state.find(x => x.name === name).value;
 }
 
 export function bind(name: String, value: Boolean): BoundVar {
-  return {name: name, value: value };
+  return { name: name, value: value };
 }
 
 function wireFind(action: Wire, state: BoundVar[]): BoundVar {

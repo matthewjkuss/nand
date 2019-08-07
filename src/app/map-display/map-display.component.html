@@ -1,0 +1,76 @@
+<svg #body
+  width="800"
+  height="600"
+  (mousedown)="mousedown($event)"
+  (mouseup)="mouseup($event)"
+  (mousemove)="mousemove($event)"
+  (mouseleave)="mouseleave($event)"
+  (wheel)="wheel($event)"
+>
+  <rect width="100%" height="100%" style="fill:rgb(211, 211, 211)" />
+  <!-- <svg
+    [attr.x]="pan_x"
+    [attr.y]="pan_y"
+    [attr.scale]="scale"
+
+  > -->
+    <g [attr.transform]="'scale(' + scale + ') translate(' + pan_x + ' ' + pan_y + ')'">
+      <svg:g app-chip-display [chip]="chip" [scale]="scale" />
+      <g
+        *ngFor="let path of paths"
+        style="stroke: black"
+        stroke-width="2"
+        stroke-linecap="round"
+        transform="translate(150,600)"
+      >
+        <line
+          stroke="blue"
+          [attr.x1]="path.preExpDx.x1"
+          [attr.y1]="path.preExpDx.y1"
+          [attr.x2]="path.preExpDx.x2"
+          [attr.y2]="path.preExpDx.y2"
+        />
+        <line
+          stroke="red"
+          [attr.x1]="path.expDy.x1"
+          [attr.y1]="path.expDy.y1"
+          [attr.x2]="path.expDy.x2"
+          [attr.y2]="path.expDy.y2"
+        />
+        <line
+          stroke="green"
+          [attr.x1]="path.preCrossDx.x1"
+          [attr.y1]="path.preCrossDx.y1"
+          [attr.x2]="path.preCrossDx.x2"
+          [attr.y2]="path.preCrossDx.y2"
+        />
+        <line
+          stroke="yellow"
+          [attr.x1]="path.crossDy[0].x1"
+          [attr.y1]="path.crossDy[0].y1"
+          [attr.x2]="path.crossDy[0].x2"
+          [attr.y2]="path.crossDy[0].y2"
+        />
+        <g
+          *ngFor="let s of path.crossDy[1]"
+          style="stroke: black"
+          fill-opacity="0.0"
+        >
+          <path [attr.d]="genCross(s.x1, s.y1, s.y2)" />
+          <line
+            stroke="cyan"
+            [attr.x1]="s.x1"
+            [attr.y1]="s.y1"
+            [attr.x2]="s.x2"
+            [attr.y2]="s.y2"
+          />
+        </g>
+        <line
+          [attr.x1]="path.postDx.x1"
+          [attr.y1]="path.postDx.y1"
+          [attr.x2]="path.postDx.x2"
+          [attr.y2]="path.postDx.y2"
+        />
+      </g>
+    </g>
+</svg>

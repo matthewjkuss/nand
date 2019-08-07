@@ -1,66 +1,10 @@
-<div>
-    Hello, World!
-</div>
+<h1>Proof of Concept</h1>>
+
+<app-map-display style="width:800px; height: 600px;"></app-map-display>
 
 <div>
-  <mat-slider min="-50" max="50" [(ngModel)]=shift></mat-slider>{{shift}}
+  <mat-slider min="-50" max="50" [(ngModel)]="shift"></mat-slider>{{shift}}
 </div>
-
-<svg width="600" height="400">
-  <rect width="100%" height="100%" style="fill:rgb(211, 211, 211)" />
-  <g *ngFor="let input of chip.input; index as y">
-    <svg x="10" [attr.y]="y*150+10" style="fill:gray; stroke:black">
-      <g>
-          <line x1="0"  y1="70" x2="100" y2="70" style="stroke:black;stroke-width:4"/>
-        <text x="25" y="60" font-family="Verdana" font-size="20" fill="black">{{input}}</text>
-      </g>
-    </svg>
-  </g>
-  <g *ngFor="let line of chip.design; index as x">
-    <g *ngFor="let action of line; index as y">
-      <svg *ngIf="action.kind === 'apply'" [attr.x]="x*150+10+150" [attr.y]="y*150+10" style="fill:gray; stroke:black">
-        <g>
-          <polygon points="0,0 0,100 100,50"  />
-          <circle cx="105" cy="50" r="5" />
-          <text x="25" y="60" font-family="Verdana" font-size="20" fill="black">{{action.chip.name}}</text>
-        </g>
-      </svg>
-      <svg *ngIf="action.kind !== 'apply'" [attr.x]="x*150+10+150" [attr.y]="y*150+10" style="fill:gray; stroke:black">
-          <g>
-            <polygon points="0,0 0,100 100,100 100,0"/>
-            <text x="25" y="60" font-family="Verdana" font-size="20" fill="black">{{action.kind}}</text>
-          </g>
-        </svg>
-    </g>
-  </g>
-  <g *ngFor="let output of chip.output; index as y">
-      <svg [attr.x]="chip.design.length*150+150" [attr.y]="y*150+10" style="fill:gray; stroke:black">
-        <g>
-            <line x1="0"  y1="70" x2="100" y2="70" style="stroke:black;stroke-width:4"/>
-          <text x="25" y="60" font-family="Verdana" font-size="20" fill="black">{{output}}</text>
-        </g>
-      </svg>
-  </g>
-  <!--
-  preExpDx: Line;
-  expDy: Line;
-  preCrossDx: Line;
-  crossDy: [Line, Line[]];
-  postDx: Line; -->
-  <g *ngFor="let path of paths" style="stroke: black" stroke-width="2" stroke-linecap="round">
-    <line stroke="blue" [attr.x1]="path.preExpDx.x1" [attr.y1]="path.preExpDx.y1" [attr.x2]="path.preExpDx.x2" [attr.y2]="path.preExpDx.y2"/>
-    <line stroke="red"  [attr.x1]="path.expDy.x1" [attr.y1]="path.expDy.y1" [attr.x2]="path.expDy.x2" [attr.y2]="path.expDy.y2"/>
-    <line stroke="green"[attr.x1]="path.preCrossDx.x1" [attr.y1]="path.preCrossDx.y1" [attr.x2]="path.preCrossDx.x2" [attr.y2]="path.preCrossDx.y2"/>
-    <line stroke="yellow"[attr.x1]="path.crossDy[0].x1" [attr.y1]="path.crossDy[0].y1" [attr.x2]="path.crossDy[0].x2" [attr.y2]="path.crossDy[0].y2"/>
-    <g *ngFor="let s of path.crossDy[1]" style="stroke: black" fill-opacity="0.0">
-        <path [attr.d]="genCross(s.x1, s.y1, s.y2)"/>
-      <line stroke="cyan" [attr.x1]="s.x1" [attr.y1]="s.y1" [attr.x2]="s.x2" [attr.y2]="s.y2"/>
-    </g>
-    <line [attr.x1]="path.postDx.x1" [attr.y1]="path.postDx.y1" [attr.x2]="path.postDx.x2" [attr.y2]="path.postDx.y2"/>
-  </g>
-
-
-</svg>
 
 <div>
   <mat-checkbox [(ngModel)]=a>A</mat-checkbox>
@@ -68,7 +12,7 @@
 <div>
   <mat-checkbox [(ngModel)]=b>B</mat-checkbox>
 </div>
-<!-- <div>
+<div>
   not({{a}}) = {{ test(not_chip) }}
 </div>
 <div>
@@ -76,7 +20,7 @@
 </div>
 <div>
   or({{a}}, {{b}}) = {{ test(or_chip) }}
-</div> -->
+</div>
 
 <table>
   <tr>
