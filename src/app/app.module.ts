@@ -4,7 +4,8 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { MatCheckboxModule, MatSliderModule } from '@angular/material';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSliderModule } from '@angular/material/slider';
 import { FormsModule } from '@angular/forms';
 import { MapDisplayComponent } from './map-display/map-display.component';
 import { ChipDisplayComponent } from './chip-display/chip-display.component';
