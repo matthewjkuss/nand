@@ -14,7 +14,7 @@ const testConnect = Array.from(Array(6).keys())
   styleUrls: ['./map-display.component.css']
 })
 export class MapDisplayComponent implements OnInit {
-  @ViewChild('body') svg;
+  @ViewChild('body', { static: true }) svg;
   pan_x = 0;
   pan_y = 0;
 
