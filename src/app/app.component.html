@@ -1,10 +1,39 @@
-<h1>Proof of Concept</h1>>
+<h1>Proof of Concept</h1>
+
+<div>
+  <mat-checkbox [(ngModel)]=runAnimation>Animate</mat-checkbox>
+</div>
+<div class="box">
+  <svg viewBox="-20 -20 200 150" >
+    <defs>
+      <filter id="shadow" x="-20%" y="-20%" width="200%" height="200%">
+        <feDropShadow dx="0" dy="1" stdDeviation="5" flood-opacity="1"/>
+      </filter>
+      <filter id="inner-shadow" x="0%" y="0%" width="100%" height="100%">
+        <feDropShadow dx="0" dy="1" [attr.stdDeviation]="shift" [attr.flood-opacity]="shift/5"/>
+      </filter>
+      <filter id="new-shadow" x="-50%" y="-50%" width="200%" height="200%">
+        <feDropShadow dx="0" dy="1" [attr.stdDeviation]="shift" [attr.flood-opacity]="shift/5"/>
+      </filter>
+    </defs>
+    <g *ngIf="!runAnimation">
+        <polygon fill="white" stroke="white" stroke-width="10" style="filter:url(#shadow);" points="0,0 100,0 100,100 0,100 0,0" />
+      <!-- <polygon fill="#FFFFFF" style="filter:url(#shadow);" class="shape" points="0,0 100,0 100,100 0,100 0,10 10,10 10,90 90,90 90,10 0,10" /> -->
+      <!-- <circle fill="#FFFFFF" cx="50" cy="50" r="20" style="filter:url(#shadow);"></circle> -->
+    </g>
+    <g *ngIf="runAnimation">
+        <polygon fill="white" stroke="white" stroke-width="10" style="filter:url(#shadow);" points="0,0 100,0 100,100 0,100 0,0" />
+        <polygon fill="none" stroke="white" stroke-width="10" class="inner" points="0,0 100,0 100,100 0,100 0,0" />
+        <circle fill="#FFFFFF" cx="50" cy="50" r="20" style="filter:url(#new-shadow);"></circle>
+    </g>
+  </svg>
+</div>
 
 <app-map-display style="width:800px; height: 600px;"></app-map-display>
 
-<div>
-  <mat-slider min="-50" max="50" [(ngModel)]="shift"></mat-slider>{{shift}}
-</div>
+<div class="box">Hello</div>
+
+
 
 <div>
   <mat-checkbox [(ngModel)]=a>A</mat-checkbox>
