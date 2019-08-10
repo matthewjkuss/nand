@@ -4,7 +4,7 @@ import { Chip } from '../chip';
 @Component({
   selector: '[app-chip-display]',
   templateUrl: './chip-display.component.html',
-  styleUrls: ['./chip-display.component.css']
+  styleUrls: ['./chip-display.component.scss']
 })
 export class ChipDisplayComponent implements OnInit {
 

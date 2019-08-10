@@ -11,7 +11,7 @@ const testConnect = Array.from(Array(6).keys())
 @Component({
   selector: 'app-map-display',
   templateUrl: './map-display.component.html',
-  styleUrls: ['./map-display.component.css']
+  styleUrls: ['./map-display.component.scss']
 })
 export class MapDisplayComponent implements OnInit {
   @ViewChild('body', { static: true }) svg;

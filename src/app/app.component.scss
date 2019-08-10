@@ -1,0 +1,26 @@
+@import '~@angular/material/theming';
+
+table, th, td {
+  border: 1px solid black;
+}
+
+
+.box {
+  width: 300px;
+  height: 300px;
+  padding: 5px;
+  margin: 30px;
+  @include mat-elevation(2);
+}
+
+polygon.shape {
+  @include mat-elevation(4);
+}
+
+.shadow {
+  // filter: drop-shadow( 0px 1px 1.5px rgba(0, 0, 0, .7));
+}
+
+.inner {
+  filter:url(#inner-shadow);
+}

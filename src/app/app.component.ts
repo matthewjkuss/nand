@@ -31,12 +31,13 @@ const testConnect = Array.from(Array(6).keys())
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
   title = 'nand';
   a = false;
   b = false;
+  runAnimation = false;
   shift = 50;
   and_chip = and_chip;
   or_chip = or_chip;
@@ -87,7 +88,15 @@ export class AppComponent implements OnInit {
     return evaluate(chip, [bind('a', this.a), bind('b', this.b)])[0].value;
   }
 
+  animate(t, obj) {
+    // obj.shift += 0.1;
+    // obj.shift = obj.shift > 5 ? 0 : obj.shift;
+    obj.shift = 2.5 + 2.5 * Math.sin(t / 500);
+    requestAnimationFrame(t => obj.animate(t, obj));
+  }
+
   ngOnInit() {
+    this.animate(0, this);
     // const mylist: String[] = ['Andy', 'Bob', 'Carl', 'Derek'];
     // const lastletter = genSortOrder(mylist, a => a.substr(-1).charCodeAt(0));
     // const secondletter = genSortOrder(mylist, a => a.charCodeAt(1));
