@@ -5,7 +5,7 @@ export function wire(from: string, to: string): Wire {
   return { kind: 'wire', from: from, to: to };
 }
 
-export function apply(chip: Chip, input: Wire[], output: Wire[]): Apply {
+export function apply(chip: string, input: Wire[], output: Wire[]): Apply {
   return { kind: 'apply', chip: chip, input: input, output: output };
 }
 

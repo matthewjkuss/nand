@@ -15,8 +15,8 @@ interface Equal {
   kind: 'equal';
 }
 
-function testInputBijectivity(app: Apply): string {
-  return app.chip.input
+function testInputBijectivity(register: Chip[], app: Apply): string {
+  return register.find(i => i.name === app.chip).input
     .map(input => [input, app.input.filter(x => input === x.to).length])
     .map(x => {
       if (x[1] < 1) {
@@ -24,7 +24,7 @@ function testInputBijectivity(app: Apply): string {
           '\t\tERROR - Surjectivity: Cannot find wire to map to input "' +
           x[0] +
           '" in "' +
-          app.chip.name +
+          app.chip +
           '".\n'
         );
       } else if (x[1] > 1) {
@@ -32,7 +32,7 @@ function testInputBijectivity(app: Apply): string {
           '\t\tERROR - Injectivity: Found multiple wires to map to input "' +
           x[0] +
           '" in "' +
-          app.chip.name +
+          app.chip +
           '".\n'
         );
       } else {
@@ -42,8 +42,8 @@ function testInputBijectivity(app: Apply): string {
     .reduce((a, b) => a + b, '');
 }
 
-function testOutputBijectivity(app: Apply): string {
-  return app.chip.output
+function testOutputBijectivity(register: Chip[], app: Apply): string {
+  return register.find(i => i.name === app.chip).output
     .map(output => [output, app.output.filter(x => output === x.from).length])
     .map(x => {
       if (x[1] < 1) {
@@ -51,7 +51,7 @@ function testOutputBijectivity(app: Apply): string {
           '\t\tWarning - Surjectivity: Output "' +
           x[0] +
           '" in "' +
-          app.chip.name +
+          app.chip +
           '" maps to nothing.\n'
         );
       } else if (x[1] > 1) {
@@ -59,7 +59,7 @@ function testOutputBijectivity(app: Apply): string {
           '\t\tERROR - Injectivity: Found multiple wires from output "' +
           x[0] +
           '" in "' +
-          app.chip.name +
+          app.chip +
           '".\n'
         );
       } else {
@@ -69,27 +69,27 @@ function testOutputBijectivity(app: Apply): string {
     .reduce((a, b) => a + b, '');
 }
 
-function testInputCodomain(app: Apply): string {
+function testInputCodomain(register: Chip[], app: Apply): string {
   return app.input
-    .filter(input => !app.chip.input.find(x => input.to === x))
+    .filter(input => !register.find(i => i.name === app.chip).input.find(x => input.to === x))
     .map(
       x =>
         '\t\tERROR - Codomain: Wire "' +
         x.to +
         '" does not map to an input in "' +
-        app.chip.name +
+        app.chip +
         '".\n'
     )
     .reduce((a, b) => a + b, '');
 }
 
-function testOutputDomain(app: Apply): string {
+function testOutputDomain(register: Chip[], app: Apply): string {
   return app.output
-    .filter(output => !app.chip.output.find(x => output.from === x))
+    .filter(output => !register.find(i => i.name === app.chip).output.find(x => output.from === x))
     .map(
       x =>
         '\t\tERROR - Domain: Chip "' +
-        app.chip.name +
+        app.chip +
         '" has no output called "' +
         x.from +
         '".\n'
@@ -122,17 +122,17 @@ function checkEqual(output: any, input: any): string {
    + output.map(x => input.find(y => x === y) ? '' : '\t\tWarning - : Output "' + x + '" is unused.\n');
 }
 
-export function validate(chip: Chip): boolean {
+export function validate(register: Chip[], chip: Chip): boolean {
   let errors = '';
   chip.design.map(column => {
     errors += 'Checking column...\n';
     column.map(action => {
       if (action.kind === 'apply') {
-        errors += '\tChecking ' + action.chip.name + '...\n';
-        errors += testInputCodomain(action);
-        errors += testInputBijectivity(action);
-        errors += testOutputDomain(action);
-        errors += testOutputBijectivity(action);
+        errors += '\tChecking ' + action.chip + '...\n';
+        errors += testInputCodomain(register, action);
+        errors += testInputBijectivity(register, action);
+        errors += testOutputDomain(register, action);
+        errors += testOutputBijectivity(register, action);
       }
     });
   });

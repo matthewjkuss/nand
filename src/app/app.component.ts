@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Chip } from './chip';
 import { evaluate, bind } from './eval-chip';
-import { and_chip, or_chip, not_chip, mux_chip } from './chips';
+import { register } from './chips';
 import { validate } from './test-chip';
 import { genCross, makeDrawPath, DrawPath, expand, PathGoal, connect, idxMap, genSortOrder, orderedMap } from './draw-wire';
 
@@ -42,14 +42,14 @@ export class AppComponent implements OnInit {
   b = false;
   runAnimation = false;
   shift = 50;
-  and_chip = and_chip;
-  or_chip = or_chip;
-  not_chip = not_chip;
-  mux_chip = mux_chip;
+  // and_chip = and_chip;
+  // or_chip = or_chip;
+  // not_chip = not_chip;
+  // mux_chip = mux_chip;
 
   genCross = genCross;
 
-  chip = mux_chip;
+  chip = 'mux';
 
 
   pathss: DrawPath[] = [
@@ -88,8 +88,8 @@ export class AppComponent implements OnInit {
 
   // test1 = evaluate(not, [bound('a', true)]);
   // test2 = evaluate(not, [bound('a', false)]);
-  test(chip: Chip) {
-    return evaluate(chip, [bind('a', this.a), bind('b', this.b)])[0].value;
+  test(chip: string) {
+    return evaluate(register, chip, [bind('a', this.a), bind('b', this.b)])[0].value;
   }
 
   animate(t, obj) {
@@ -113,7 +113,7 @@ export class AppComponent implements OnInit {
     // console.log(mylist);
     // console.log(this.test1, this.test2, this.test3);
     // console.log(this.test3);
-    validate(or_chip);
+    // validate(or_chip);
     // connect(testConnect);
     // console.log("Test expand", expand(testConnect));
 

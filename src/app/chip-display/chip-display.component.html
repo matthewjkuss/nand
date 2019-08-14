@@ -26,15 +26,15 @@
     >
 
       <g>
-        <g *ngIf="action.chip.name === 'not'">
+        <g *ngIf="action.chip === 'not'">
             <polygon points="0,0 0,100 100,50" />
             <circle cx="105" cy="50" r="5" />
           </g>
-          <g *ngIf="action.chip.name !== 'not'">
+          <g *ngIf="action.chip !== 'not'">
             <polygon points="0,0 0,130 130,130 130,0" />
           </g>
         <g *ngIf="scale >= 2.0">
-          <svg:g app-chip-display [chip]=action.chip [scale]="0.5*scale" transform="scale(0.2)" />
+          <svg:g app-chip-display [chip]="getChip(action.chip)" [scale]="0.5*scale" transform="scale(0.2)" />
         </g>
         <g *ngIf="scale < 2.0">
           <text x="25" y="60" font-family="Verdana" font-size="20" fill="black">
@@ -86,7 +86,7 @@
         y1="70"
         x2="100"
         y2="70"
-        [attr.stroke]="state && evaluate(chip, state.input)[0].value ? 'black' : 'gray'"
+        [attr.stroke]="state && evaluate(register, chip.name, state.input)[0].value ? 'black' : 'gray'"
         style="stroke-width:4"
       />
       <text x="25" y="60" font-family="Verdana" font-size="20" fill="black">

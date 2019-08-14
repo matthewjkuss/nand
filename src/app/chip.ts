@@ -1,4 +1,4 @@
-
+import { BoundVar } from './eval-chip';
 /** Defines a wire connecting chips. */
 export interface Wire {
   kind: 'wire';
@@ -10,7 +10,8 @@ export interface Wire {
  * other named chips. */
 export interface Apply {
   kind: 'apply';
-  chip: Chip;
+  // chip: Chip;
+  chip: string;
   input: Wire[];
   output: Wire[];
 }
@@ -32,4 +33,5 @@ export interface Chip {
   /** Outer array gives 'stages' of chips, and inner gives chips within a given
    * stage. */
   design: Action[][];
+  emulation: (_: BoundVar[]) => BoundVar[];
 }

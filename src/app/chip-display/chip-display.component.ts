@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Chip } from '../chip';
 import { State, evaluate } from '../eval-chip';
+import { register } from '../chips';
 
 @Component({
   selector: '[app-chip-display]',
@@ -13,6 +14,8 @@ export class ChipDisplayComponent implements OnInit {
   @Input() state: State;
   @Input() scale: number;
 
+  register = register;
+
   evaluate = evaluate;
 
   constructor() { }
@@ -20,4 +23,8 @@ export class ChipDisplayComponent implements OnInit {
   ngOnInit() {
   }
 
+
+  getChip(chip: string): Chip {
+    return register.find(x => x.name === chip);
+  }
 }
