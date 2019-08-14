@@ -24,7 +24,7 @@ export interface Nand {
   output: string;
 }
 
-export type Action = Wire | Apply | Nand;
+export type Action = Wire | Apply;
 
 export interface Chip {
   name: string;

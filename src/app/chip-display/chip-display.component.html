@@ -33,7 +33,7 @@
           <g *ngIf="action.chip !== 'not'">
             <polygon points="0,0 0,130 130,130 130,0" />
           </g>
-        <g *ngIf="scale >= 2.0">
+        <g *ngIf="scale >= 2.0 && getChip(action.chip).design">
           <svg:g app-chip-display [chip]="getChip(action.chip)" [scale]="0.5*scale" transform="scale(0.2)" />
         </g>
         <g *ngIf="scale < 2.0">

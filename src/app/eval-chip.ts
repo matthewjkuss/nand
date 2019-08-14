@@ -21,7 +21,7 @@ function wireFind(action: Wire, state: BoundVar[]): BoundVar {
 
 function perform(register: Chip[], action: Action, state: BoundVar[]): BoundVar[] {
   switch (action.kind) {
-    case 'nand': return [ bind(action.output, !(getBound(state, action.a) && getBound(state, action.b))) ];
+    // case 'nand': return [ bind(action.output, !(getBound(state, action.a) && getBound(state, action.b))) ];
     case 'wire': return [ wireFind(action, state) ];
     case 'apply':
       const output = evaluate(register, action.chip, action.input.map(x => wireFind(x, state)));
@@ -30,8 +30,13 @@ function perform(register: Chip[], action: Action, state: BoundVar[]): BoundVar[
 }
 
 export function evaluate(register: Chip[], chip: string, input: BoundVar[]): BoundVar[] {
+  const chip_ptr = register.find(x => x.name === chip);
   // return chip.emulation(input);
-  return register.find(x => x.name == chip).design.reduce((state, line) => [].concat.apply([], line.map(action => perform(register, action, state))), input);
+  if (!chip_ptr.design) {
+    return chip_ptr.emulation(input);
+  } else {
+    return chip_ptr.design.reduce((state, line) => [].concat.apply([], line.map(action => perform(register, action, state))), input);
+  }
 }
 
 export interface State {

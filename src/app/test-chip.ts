@@ -100,8 +100,8 @@ function testOutputDomain(register: Chip[], app: Apply): string {
 function listInput(action: Action): string[] {
   if (action.kind === 'apply') {
     return action.input.map(x => x.from);
-  } else if (action.kind === 'nand') {
-    return [action.a, action.b];
+  // } else if (action.kind === 'nand') {
+  //   return [action.a, action.b];
   } else if (action.kind === 'wire') {
     return [action.from];
   }
@@ -110,8 +110,8 @@ function listInput(action: Action): string[] {
 function listOutput(action: Action): string[] {
   if (action.kind === 'apply') {
     return action.output.map(x => x.to);
-  } else if (action.kind === 'nand') {
-    return [action.output];
+  // } else if (action.kind === 'nand') {
+  //   return [action.output];
   } else if (action.kind === 'wire') {
     return [action.to];
   }

@@ -6,6 +6,12 @@ import { getBound } from './eval-chip';
 
 export const register: Chip[] = [
   {
+    name: 'nand',
+    input: ['a'],
+    output: ['out'],
+    design: null,
+    emulation: x => [{name: 'out', value: !(x[0].value && x[1].value)}]
+  }, {
     name: 'not',
     input: ['a'],
     output: ['out'],
