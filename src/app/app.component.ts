@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Chip } from './chip';
+import { Chip, chipFromReg } from './chip';
 import { evaluate, bind } from './eval-chip';
 import { register } from './chips';
 import { validate } from './test-chip';
@@ -34,7 +34,7 @@ interface Order {
 }
 
 function computeOrder(register: Chip[], chip_name: string, order: Order[]): Order[] {
-  const chip = register.find(x => x.name === chip_name);
+  const chip = chipFromReg(chip_name, register);
   const entry = order.find(x => x.name === chip.name);
   if (entry) {
 

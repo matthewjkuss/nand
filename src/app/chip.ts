@@ -35,3 +35,12 @@ export interface Chip {
   design: Action[][];
   emulation: (_: BoundVar[]) => BoundVar[];
 }
+
+export function chipFromReg(chip_name: string, register: Chip[]) {
+  const result = register.find(x => x.name === chip_name);
+  if (result) {
+    return result;
+  } else {
+    throw new Error('Could not retrieve chip ' + chip_name + ' from register!');
+  }
+}
