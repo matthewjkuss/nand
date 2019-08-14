@@ -37,9 +37,9 @@ export const mux_chip: Chip = {
   input: ['a', 'b', 'm'],
   output: ['out'],
   design: [
-    [ id('a'), id('b'), apply(not_chip, [wire('m', 'a')], [wire('out', 'nm')]) ],
-    [ apply(and_chip, [id('a'), wire('m' , 'b')], [wire('out', 'x')]),
-      apply(and_chip, [id('b'), wire('nm', 'a')], [wire('out', 'y')]) ],
+    [ id('a'), id('b'), id('m'), apply(not_chip, [wire('m', 'a')], [wire('out', 'nm')]) ],
+    [ apply(and_chip, [id('a'), wire('nm' , 'b')], [wire('out', 'x')]),
+      apply(and_chip, [id('b'), wire('m', 'a')], [wire('out', 'y')]) ],
     [ apply(or_chip, [wire('x', 'a'), wire('y', 'b')], [id('out')]) ]
   ]
 };

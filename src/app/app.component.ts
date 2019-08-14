@@ -28,6 +28,9 @@ const testConnect = Array.from(Array(6).keys())
 //  {source: 60.016805256118076, dest: 4.604772807473179},
 // ];
 
+
+
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -47,6 +50,7 @@ export class AppComponent implements OnInit {
   genCross = genCross;
 
   chip = mux_chip;
+
 
   pathss: DrawPath[] = [
     {

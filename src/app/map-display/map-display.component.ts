@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef, ViewChild } from '@angular/core';
 
 import { genCross, connect, makeDrawPath } from 'src/app/draw-wire';
 import { mux_chip } from '../chips';
+import { stateFromChip, State } from '../eval-chip';
 
 
 const testConnect = Array.from(Array(6).keys())
@@ -40,6 +41,7 @@ export class MapDisplayComponent implements OnInit {
 
   genCross = genCross;
   chip = mux_chip;
+  state: State = stateFromChip(this.chip);
 
   paths = connect(testConnect).map(makeDrawPath);
 

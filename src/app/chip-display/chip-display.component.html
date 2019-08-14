@@ -7,7 +7,8 @@
         y1="70"
         x2="100"
         y2="70"
-        style="stroke:black;stroke-width:4"
+        [attr.stroke]="state && state.input[y].value ? 'black' : 'gray'"
+        style="stroke-width:4"
       />
       <text x="25" y="60" font-family="Verdana" font-size="20" fill="black">
         {{ input }}
@@ -85,7 +86,8 @@
         y1="70"
         x2="100"
         y2="70"
-        style="stroke:black;stroke-width:4"
+        [attr.stroke]="state && evaluate(chip, state.input)[0].value ? 'black' : 'gray'"
+        style="stroke-width:4"
       />
       <text x="25" y="60" font-family="Verdana" font-size="20" fill="black">
         {{ output }}

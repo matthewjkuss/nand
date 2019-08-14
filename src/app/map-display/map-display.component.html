@@ -1,3 +1,5 @@
+<div><mat-checkbox *ngFor="let input of chip.input; index as i" [(ngModel)]="state.input[i].value">{{i + ' ' + input}}</mat-checkbox></div>
+
 <svg #body
   width="800"
   height="600"
@@ -15,7 +17,7 @@
 
   > -->
     <g [attr.transform]="'scale(' + scale + ') translate(' + pan_x + ' ' + pan_y + ')'">
-      <svg:g app-chip-display [chip]="chip" [scale]="scale" />
+      <svg:g app-chip-display [chip]="chip" [state]="state" [scale]="scale" />
       <g
         *ngFor="let path of paths"
         style="stroke: black"

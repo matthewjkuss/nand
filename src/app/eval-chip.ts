@@ -32,3 +32,26 @@ function perform(action: Action, state: BoundVar[]): BoundVar[] {
 export function evaluate(chip: Chip, input: BoundVar[]): BoundVar[] {
   return chip.design.reduce((state, line) => [].concat.apply([], line.map(action => perform(action, state))), input);
 }
+
+export interface State {
+  input: BoundVar[];
+  design: State[][];
+  output: BoundVar[];
+}
+
+export function stateFromChip(chip: Chip): State {
+  const input = [];
+  const output = [];
+  let x;
+  for (x of chip.input) {
+    input.push({ name: x, value: null });
+  }
+  for (x of chip.output) {
+    input.push({ name: x, value: null });
+  }
+  return {
+    input: input,
+    design: null,
+    output: output,
+  };
+}
