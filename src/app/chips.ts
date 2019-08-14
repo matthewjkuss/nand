@@ -12,6 +12,12 @@ export const register: Chip[] = [
     design: null,
     emulation: x => [{name: 'out', value: !(x[0].value && x[1].value)}]
   }, {
+    name: 'true',
+    input: ['a'],
+    output: ['out'],
+    design: null,
+    emulation: x => [{name: 'out', value: true}]
+  }, {
     name: 'not',
     input: ['a'],
     output: ['out'],

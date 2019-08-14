@@ -28,7 +28,33 @@ const testConnect = Array.from(Array(6).keys())
 //  {source: 60.016805256118076, dest: 4.604772807473179},
 // ];
 
+interface Order {
+  name: string;
+  order: number;
+}
 
+function computeOrder(register: Chip[], chip_name: string, order: Order[]): Order[] {
+  const chip = register.find(x => x.name === chip_name);
+  const entry = order.find(x => x.name === chip.name);
+  if (entry) {
+
+  } else if (!chip.design) {
+    order.push({name: chip_name, order: 0});
+  } else {
+    let biggest = -1;
+    for (const stage of chip.design) {
+      for (const action of stage) {
+        if (action.kind === 'apply') {
+          order = computeOrder(register, action.chip, order);
+          const current = order.find(x => x.name === action.chip).order;
+          biggest = current > biggest ? current : biggest;
+        }
+      }
+    }
+    order.push({name: chip_name, order: biggest + 1});
+  }
+  return order;
+}
 
 
 @Component({
@@ -120,5 +146,6 @@ export class AppComponent implements OnInit {
     console.log(testConnect);
 
     console.log(this.pos);
+    console.log('order', register.reduce((acc, x) => computeOrder(register, x.name, acc), []));
   }
 }
