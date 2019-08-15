@@ -4,6 +4,7 @@ import { evaluate, bind } from './eval-chip';
 import { register } from './chips';
 import { validate } from './test-chip';
 import { genCross, makeDrawPath, DrawPath, expand, PathGoal, connect, idxMap, genSortOrder, orderedMap } from './draw-wire';
+import { RegReduce, regReduce } from './reduce-register';
 
 // const testConnect: PathGoal[] = [[0, 60], [30, 30], [60, 0]].map(x => {
 //   return { source: x[0], dest: x[1] };
@@ -32,29 +33,23 @@ interface Order {
   name: string;
   order: number;
 }
-
-function computeOrder(register: Chip[], chip_name: string, order: Order[]): Order[] {
-  const chip = chipFromReg(chip_name, register);
-  const entry = order.find(x => x.name === chip.name);
-  if (entry) {
-
-  } else if (!chip.design) {
-    order.push({name: chip_name, order: 0});
-  } else {
-    let biggest = -1;
-    for (const stage of chip.design) {
-      for (const action of stage) {
-        if (action.kind === 'apply') {
-          order = computeOrder(register, action.chip, order);
-          const current = order.find(x => x.name === action.chip).order;
-          biggest = current > biggest ? current : biggest;
-        }
-      }
-    }
-    order.push({name: chip_name, order: biggest + 1});
-  }
-  return order;
+// computeOrder
+function computeOrder(acc: any, value: any): any {
+  return value.order + 1 > acc ? value.order + 1 : acc;
 }
+
+// function countNand(acc: any, value: any): any {
+//   return acc + value.order;
+// }
+
+
+
+const countNand: RegReduce<number> = {
+  childValue: 1,
+  defValue: 0,
+  f: (acc, x) => acc + x.value
+}
+
 
 
 @Component({
@@ -146,6 +141,7 @@ export class AppComponent implements OnInit {
     console.log(testConnect);
 
     console.log(this.pos);
-    console.log('order', register.reduce((acc, x) => computeOrder(register, x.name, acc), []));
+    // console.log('order', register.reduce((acc, x) => regReduce(register, x.name, computeOrder, 0, acc), []));
+    console.log('nands', register.reduce((acc, x) => regReduce(countNand, register, x.name, acc), []));
   }
 }
