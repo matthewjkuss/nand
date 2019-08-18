@@ -41,7 +41,7 @@ export class MapDisplayComponent implements OnInit {
 
   genCross = genCross;
   chip = register.find(x => x.name === 'mux');
-  state: State = stateFromChip(register, 'mux');
+  // state: State = stateFromChip(register, 'mux');
 
   paths = connect(testConnect).map(makeDrawPath);
 

@@ -6,8 +6,15 @@ import { getBound } from './eval-chip';
 
 export const register: Chip[] = [
   {
-    name: 'nand',
+    name: 'id',
     input: ['a'],
+    output: ['out'],
+    design: null,
+    emulation: x => [{name: 'out', value: x[0].value}]
+  },
+  {
+    name: 'nand',
+    input: ['a', 'b'],
     output: ['out'],
     design: null,
     emulation: x => [{name: 'out', value: !(x[0].value && x[1].value)}]
@@ -22,8 +29,8 @@ export const register: Chip[] = [
     input: ['a'],
     output: ['out'],
     design: [
-      [ id('a'), wire('a', 'b') ],
-      [ nand('a', 'b', 'out') ]
+      // [ id('a'), wire('a', 'b') ],
+      [ nand('a', 'a', 'out') ]
     ],
     emulation: x => [{name: 'out', value: !x[0].value}]
   }, {
@@ -46,12 +53,12 @@ export const register: Chip[] = [
     emulation: x => [{name: 'out', value: x[0].value || x[1].value}]
   }, {
     name: 'mux',
-    input: ['a', 'b', 'm'],
+    input: ['a', 'b', 'sel'],
     output: ['out'],
     design: [
-      [ id('a'), id('b'), id('m'), apply('not', [wire('m', 'a')], [wire('out', 'nm')]) ],
-      [ apply('and', [id('a'), wire('nm' , 'b')], [wire('out', 'x')]),
-        apply('and', [id('b'), wire('m', 'a')], [wire('out', 'y')]) ],
+      [ id('a'), id('b'), id('sel'), apply('not', [wire('sel', 'a')], [wire('out', 'nsel')]) ],
+      [ apply('and', [id('a'), wire('nsel' , 'b')], [wire('out', 'x')]),
+        apply('and', [id('b'), wire('sel', 'a')], [wire('out', 'y')]) ],
       [ apply('or', [wire('x', 'a'), wire('y', 'b')], [id('out')]) ]
     ],
     emulation: x => [{name: 'out', value: getBound(x, 'm') ? getBound(x, 'b') : getBound(x, 'a')}]

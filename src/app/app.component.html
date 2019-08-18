@@ -1,41 +1,34 @@
-<h1>Proof of Concept</h1>
-
-<div>
-  <mat-checkbox [(ngModel)]=runAnimation>Animate</mat-checkbox>
+<div [class.mat-elevation-z4]=true style="z-index: 1; padding:10px; flex-grow: 0; height: 60px; display: flex; justify-content: space-between; align-items: center; background-color: rgb(245, 245, 245)">
+  <h1>Logic Gate Displayer</h1>
 </div>
-<div class="box">
-  <svg viewBox="-20 -20 200 150" >
-    <defs>
-      <filter id="shadow" x="-20%" y="-20%" width="200%" height="200%">
-        <feDropShadow dx="0" dy="1" stdDeviation="5" flood-opacity="1"/>
-      </filter>
-      <filter id="inner-shadow" x="0%" y="0%" width="100%" height="100%">
-        <feDropShadow dx="0" dy="0" [attr.stdDeviation]="shift" [attr.flood-opacity]="1"/>
-        <!-- <feDropShadow dx="0" dy="1" [attr.stdDeviation]="shift" [attr.flood-opacity]="shift/5"/> -->
-      </filter>
-      <filter id="new-shadow" x="-50%" y="-50%" width="200%" height="200%">
-        <feDropShadow dx="0" dy="0" [attr.stdDeviation]="shift" [attr.flood-opacity]="1"/>
-        <!-- <feDropShadow dx="0" dy="1" [attr.stdDeviation]="shift" [attr.flood-opacity]="shift/5"/> -->
-      </filter>
-    </defs>
-    <g *ngIf="!runAnimation">
-        <polygon fill="white" stroke="white" stroke-width="10" style="filter:url(#shadow);" points="0,0 100,0 100,100 0,100 0,0" />
-      <!-- <polygon fill="#FFFFFF" style="filter:url(#shadow);" class="shape" points="0,0 100,0 100,100 0,100 0,10 10,10 10,90 90,90 90,10 0,10" /> -->
-      <!-- <circle fill="#FFFFFF" cx="50" cy="50" r="20" style="filter:url(#shadow);"></circle> -->
-    </g>
-    <g *ngIf="runAnimation">
-        <polygon fill="white" stroke="white" stroke-width="10" style="filter:url(#shadow);" points="0,0 100,0 100,100 0,100 0,0" />
-        <polygon fill="none" stroke="white" stroke-width="10" class="inner" points="0,0 100,0 100,100 0,100 0,0" />
-        <circle fill="#FFFFFF" cx="50" cy="50" r="20" style="filter:url(#new-shadow);"></circle>
-    </g>
+
+<div
+  style="flex-grow: 1; display: flex; justify-content: space-between; height: 40%;"
+>
+<div
+    style="align-content: center; width:20%; display: flex; flex-direction: column; background-color: rgb(245, 245, 245)"  [class.mat-elevation-z4]=true
+  >
+  <h2>Mux</h2>
+  <!-- <div>
+    <input matInput placeholder="Favorite food" [(ngModel)]="tempchip">
+    <button (click)="updateChip()">Update</button>
+  </div> -->
+  <div>
+    <mat-checkbox (change)="updatea($event)">a</mat-checkbox>
+  </div>
+  <div>
+    <mat-checkbox (change)="updateb($event)">b</mat-checkbox>
+  </div>
+  <div>
+    <mat-checkbox (change)="updatesel($event)">sel</mat-checkbox>
+  </div>
+  </div>
+  <!-- <app-map-display style="flex: 1 1 auto"></app-map-display> -->
+  <svg width=1200 height=800>
+    <svg:g app-chip-exterior [register]="register" [chip]="chip" [layouts]="layouts" [state]="state" />
   </svg>
+
 </div>
-
-
-<app-map-display style="width:800px; height: 600px;"></app-map-display>
-
-<div class="box">Hello</div>
-
 
 
 <!-- <div>

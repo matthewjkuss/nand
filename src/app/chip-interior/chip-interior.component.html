@@ -1,0 +1,29 @@
+<svg>
+  <!-- <g *ngFor="let stage of outputs; let i = index">
+    <g *ngFor="let chip of stage; let j = index">
+      <g *ngFor="let wire of chip; let k = index">
+        <line vector-effect="non-scaling-stroke" stroke-width="4" stroke="black" stroke-linecap="round" [attr.x1]="wire.x1" [attr.x2]="wire.x2" [attr.y1]="wire.y1" [attr.y2]="wire.y2"/>
+      </g>
+    </g>
+  </g>
+  <g *ngFor="let stage of outputs; let i = index">
+    <g *ngFor="let chip of stage; let j = index">
+      <g *ngFor="let wire of chip; let k = index">
+        <line vector-effect="non-scaling-stroke" stroke-width="2" stroke="white" stroke-linecap="round" [attr.x1]="wire.x1" [attr.x2]="wire.x2" [attr.y1]="wire.y1" [attr.y2]="wire.y2"/>
+      </g>
+    </g>
+  </g> -->
+  <g *ngFor="let stage of mychip.design; let i = index">
+    <g *ngFor="let action of stage; let j = index">
+      <g *ngIf="action.kind === 'apply'" [attr.transform]="'translate(' + layout.design[i][j].x + ' ' + layout.design[i][j].y + ')'">
+        <svg:g app-chip-exterior [register]="register" [chip]="action.chip" [layouts]="layouts" [state]="state ? state.design[i][j] : null"/>
+        <!-- <text text-anchor=start [attr.x]="valueFromList(action.chip, layouts).width+30" [attr.y]="valueFromList(action.chip, layouts).height/2">{{action.output[0].to}}</text> -->
+      </g>
+      <g *ngIf="action.kind === 'wire'" [attr.transform]="'translate(' + layout.design[i][j].x + ' ' + layout.design[i][j].y + ')'">
+        <!-- <line stroke="black" x1="0" x2="100" y1="10" y2="10"/>
+        <text>{{action.from}} -> {{action.to}}</text> -->
+      </g>
+    </g>
+  </g>
+</svg>
+

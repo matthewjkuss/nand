@@ -1,0 +1,33 @@
+<svg >
+  <!-- <g [attr.transform]="'scale(' + (layout.width/32) + ' ' + (layout.height/32) + ') '">
+  <g *ngFor="let in of mychip.input; let i = index">
+    <line vector-effect="non-scaling-stroke"  stroke="black" x1="0" x2="15" [attr.y1]="(32/layout.height)*(2*i+1)*(layout.height)/(2*mychip.input.length)" [attr.y2]="(32/layout.height)*(2*i+1)*(layout.height)/(2*mychip.input.length)"/>
+  </g>
+  <g *ngFor="let out of mychip.output; let i = index">
+    <line vector-effect="non-scaling-stroke"  stroke="black" [attr.x1]="(32/layout.width)*(layout.width)" [attr.x2]="(32/layout.width)*(layout.width+20)" [attr.y1]="(32/layout.height)*(i+1)*(layout.height)/(mychip.output.length+1)" [attr.y2]="(32/layout.height)*(i+1)*(layout.height)/(mychip.output.length+1)"/>
+  </g>
+
+    <path d="m 0,0 4,4 v 24 l -4,4 h 28 l 4,-4 v -24 l -4,-4 z" vector-effect="non-scaling-stroke" fill="white" [attr.x]="10" [attr.width]="layout.width" [attr.height]="layout.height" style="stroke:black"/>
+  </g> -->
+
+    <g *ngFor="let in of mychip.input; let i = index">
+      <text style="font: 15px monospace" text-anchor="end" [attr.x]="layout.lpad-2" [attr.y]="layout.inputs[i].position - 6">{{in}}</text>
+      <line vector-effect="non-scaling-stroke" stroke-width="4" stroke="black" stroke-linecap="round" [attr.x1]="layout.lpad-layout.inputs[i].length" [attr.x2]="layout.lpad" [attr.y1]="layout.inputs[i].position" [attr.y2]="layout.inputs[i].position"/>
+      <line vector-effect="non-scaling-stroke" stroke-width="2" [attr.stroke]="(state && state.input[i].value) ? 'black' : 'white'" stroke-linecap="round" [attr.x1]="layout.lpad-layout.inputs[i].length" [attr.x2]="layout.lpad" [attr.y1]="layout.inputs[i].position" [attr.y2]="layout.inputs[i].position"/>
+    </g>
+    <g *ngFor="let out of mychip.output; let i = index">
+      <!-- <line vector-effect="non-scaling-stroke"  stroke="black" [attr.x1]="(layout.width)" [attr.x2]="(layout.width+20)" [attr.y1]="(i+1)*(layout.height)/(mychip.output.length+1)" [attr.y2]="(i+1)*(layout.height)/(mychip.output.length+1)"/>
+      <text style="font: 15px monospace" text-anchor="start" [attr.x]="layout.width+15" [attr.y]="(i+1)*(layout.height)/(mychip.output.length+1) - 10">{{out}}</text> -->
+      <text style="font: 15px monospace" text-anchor="start" [attr.x]="layout.width+layout.rpad+2" [attr.y]="layout.outputs[i].position - 6">{{out}}</text>
+      <line vector-effect="non-scaling-stroke" stroke-width="4" stroke="black" stroke-linecap="round" [attr.x1]="layout.width+layout.outputs[i].length+layout.rpad" [attr.x2]="layout.width+layout.rpad" [attr.y1]="layout.outputs[i].position" [attr.y2]="layout.outputs[i].position"/>
+      <line vector-effect="non-scaling-stroke" stroke-width="2" [attr.stroke]="(state && state.output[i].value) ? 'black' : 'white'" stroke-linecap="round" [attr.x1]="layout.width+layout.rpad+layout.outputs[i].length" [attr.x2]="layout.width+layout.rpad" [attr.y1]="layout.outputs[i].position" [attr.y2]="layout.outputs[i].position"/>
+    </g>
+
+      <rect fill="white" [attr.x]="layout.lpad" [attr.width]="layout.width" [attr.height]="layout.height" style="stroke:black"/>
+
+  <text text-anchor="middle" [attr.x]="layout.width/2" [attr.y]="layout.height-15">{{chip}}</text>
+  <g *ngIf="mychip.design" [attr.transform]="'translate(' + layout.lpad + ' 0)'">
+    <svg:g app-chip-interior [register]="register" [chip]="chip" [layouts]="layouts" [state]="state"/>
+  </g>
+
+</svg>
